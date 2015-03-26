@@ -157,6 +157,9 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	expect "0555,65534,65533|06555,65534,65533" lstat ${n0} mode,uid,gid
 	;;
+Linux:ganesha)
+	expect 06555,65534,65533 lstat ${n0} mode,uid,gid
+	;;
 Linux:*)
 	expect 0555,65534,65533 lstat ${n0} mode,uid,gid
 	;;
@@ -176,7 +179,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	expect "0555,65534,65532|06555,65534,65532" lstat ${n0} mode,uid,gid
 	;;
-Linux:xfs)
+Linux:xfs|Linux:ganesha)
 	expect 0555,65534,65532 lstat ${n0} mode,uid,gid
 	;;
 Linux:*)
@@ -193,7 +196,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	expect "0555,65534,65533|06555,65534,65533" lstat ${n0} mode,uid,gid
 	;;
-Linux:xfs)
+Linux:xfs|Linux:ganesha)
 	expect 0555,65534,65533 lstat ${n0} mode,uid,gid
 	;;
 Linux:*)
@@ -228,7 +231,7 @@ if supported lchmod; then
 fi
 
 # successfull chown(2) call (except uid and gid equal to -1) updates ctime.
-# 109
+# 109/94
 expect 0 create ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -237,7 +240,7 @@ expect 65534,65533 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 114
+# 114/99
 expect 0 mkdir ${n0} 0755
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -246,7 +249,7 @@ expect 65534,65533 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 rmdir ${n0}
-# 119
+# 119/104
 expect 0 mkfifo ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -255,7 +258,7 @@ expect 65534,65533 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 124
+# 124/109
 expect 0 symlink ${n1} ${n0}
 ctime1=`${fstest} lstat ${n0} ctime`
 sleep 1
@@ -264,7 +267,7 @@ expect 65534,65533 lstat ${n0} uid,gid
 ctime2=`${fstest} lstat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 129
+# 129/114
 expect 0 create ${n0} 0644
 expect 0 chown ${n0} 65534 65533
 ctime1=`${fstest} stat ${n0} ctime`
@@ -274,7 +277,7 @@ expect 65534,65532 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 135
+# 135/120
 expect 0 mkdir ${n0} 0755
 expect 0 chown ${n0} 65534 65533
 ctime1=`${fstest} stat ${n0} ctime`
@@ -284,7 +287,7 @@ expect 65534,65532 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 rmdir ${n0}
-# 141
+# 141/126
 expect 0 mkfifo ${n0} 0644
 expect 0 chown ${n0} 65534 65533
 ctime1=`${fstest} stat ${n0} ctime`
@@ -295,7 +298,7 @@ expect 65534,65532 lstat ${n0} uid,gid
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 148
+# 148/133
 expect 0 symlink ${n1} ${n0}
 expect 0 lchown ${n0} 65534 65533
 ctime1=`${fstest} lstat ${n0} ctime`
@@ -305,7 +308,7 @@ expect 65534,65532 lstat ${n0} uid,gid
 ctime2=`${fstest} lstat ${n0} ctime`
 test_check $ctime1 -lt $ctime2
 expect 0 unlink ${n0}
-# 154
+# 154/139
 # Posix is unclear about updating ctime when both uid and gid are equal to -1
 expect 0 create ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
@@ -316,7 +319,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	test_check $ctime1 -le $ctime2
 	;;
-SunOS:*|Linux:ntfs-3g)
+SunOS:*|Linux:ntfs-3g|Linux:ganesha)
 	test_check $ctime1 -eq $ctime2
 	;;
 Linux:*)
@@ -327,7 +330,7 @@ Linux:*)
 	;;
 esac
 expect 0 unlink ${n0}
-# 158
+# 158/143
 expect 0 mkdir ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -337,7 +340,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	test_check $ctime1 -le $ctime2
 	;;
-SunOS:*|Linux:ntfs-3g)
+SunOS:*|Linux:ntfs-3g|Linux:ganesha)
 	test_check $ctime1 -eq $ctime2
 	;;
 Linux:*)
@@ -348,7 +351,7 @@ Linux:*)
 	;;
 esac
 expect 0 rmdir ${n0}
-# 162
+# 162/147
 expect 0 mkfifo ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -358,7 +361,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	test_check $ctime1 -le $ctime2
 	;;
-SunOS:*|Linux:ntfs-3g)
+SunOS:*|Linux:ntfs-3g|Linux:ganesha)
 	test_check $ctime1 -eq $ctime2
 	;;
 Linux:*)
@@ -369,7 +372,7 @@ Linux:*)
 	;;
 esac
 expect 0 unlink ${n0}
-# 166
+# 166/151
 expect 0 symlink ${n1} ${n0}
 ctime1=`${fstest} lstat ${n0} ctime`
 sleep 1
@@ -379,7 +382,7 @@ case "${os}:${fs}" in
 Linux:glusterfs)
 	test_check $ctime1 -le $ctime2
 	;;
-SunOS:*|Linux:ntfs-3g)
+SunOS:*|Linux:ntfs-3g|Linux:ganesha)
 	test_check $ctime1 -eq $ctime2
 	;;
 Linux:*)
@@ -392,7 +395,7 @@ esac
 expect 0 unlink ${n0}
 
 # unsuccessful chown(2) does not update ctime.
-# 170
+# 170/155
 expect 0 create ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -400,7 +403,7 @@ expect EPERM -u 65534 -- chown ${n0} 65534 -1
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -eq $ctime2
 expect 0 unlink ${n0}
-# 174
+# 174/159
 expect 0 mkdir ${n0} 0755
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -408,7 +411,7 @@ expect EPERM -u 65534 -g 65534 -- chown ${n0} -1 65534
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -eq $ctime2
 expect 0 rmdir ${n0}
-# 178
+# 178/163
 expect 0 mkfifo ${n0} 0644
 ctime1=`${fstest} stat ${n0} ctime`
 sleep 1
@@ -416,7 +419,7 @@ expect EPERM -u 65534 -g 65534 chown ${n0} 65534 65534
 ctime2=`${fstest} stat ${n0} ctime`
 test_check $ctime1 -eq $ctime2
 expect 0 unlink ${n0}
-# 182
+# 182/167
 expect 0 symlink ${n1} ${n0}
 ctime1=`${fstest} lstat ${n0} ctime`
 sleep 1
@@ -425,6 +428,6 @@ ctime2=`${fstest} lstat ${n0} ctime`
 test_check $ctime1 -eq $ctime2
 expect 0 unlink ${n0}
 
-# 186
+# 186/171
 cd ${cdir}
 expect 0 rmdir ${n2}
