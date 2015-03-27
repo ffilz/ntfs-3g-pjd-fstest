@@ -35,6 +35,9 @@ run_getconf()
 
 name_max_val=$(run_getconf NAME_MAX)
 path_max_val=$(run_getconf PATH_MAX)
+if [ -z "$symlink_max_val" ]; then
+	symlink_max_val=$(($path_max_val))
+fi
 
 name_max="_"
 i=1
@@ -54,6 +57,18 @@ done
 long_dir="${long_dir}/x"
 
 too_long="${long_dir}/${name_max}"
+
+num_of_dirs_sym=$(( ($symlink_max_val + $name_max_val) / ($name_max_val + 1) - 1 ))
+
+long_sym="${name_max}"
+i=1
+while test $i -lt $num_of_dirs_sym ; do 
+	long_sym="${long_sym}/${name_max}"
+	i=$(($i+1))
+done
+long_sym="${long_sym}/x"
+
+too_long_sym="${long_sym}/${name_max}"
 
 create_too_long()
 {
